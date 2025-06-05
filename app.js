@@ -2,16 +2,20 @@ let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = 'inline-block';
+  console.log('beforeinstallprompt event fired');
+  e.preventDefault();  // Prevent Chrome from auto showing prompt
+  deferredPrompt = e;   // Save the event for later
+  installBtn.style.display = 'inline-block';  // Show install button
+});
 
-  installBtn.addEventListener('click', () => {
-    installBtn.style.display = 'none';
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choiceResult => {
-      deferredPrompt = null;
-    });
-  });
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) {
+    console.log('No install prompt available');
+    return;
+  }
+  installBtn.style.display = 'none';  // Hide the install button
+  deferredPrompt.prompt();             // Show install prompt
+  const choiceResult = await deferredPrompt.userChoice;
+  console.log('User choice:', choiceResult.outcome);
+  deferredPrompt = null;               // Clear saved prompt
 });
